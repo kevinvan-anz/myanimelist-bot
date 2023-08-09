@@ -22,8 +22,11 @@ func main() {
 
 	anime, _, err := c.Anime.Details(ctx, 51009,
 		mal.Fields{
-			"ID",
+			"mean",
+			"rank",
 			"start_season",
+			"broadcast",
+			"popularity",
 			"studios",
 			"num_episodes",
 			"average_episode_duration",
@@ -33,12 +36,26 @@ func main() {
 		return
 	}
 
+	/*jstTimeStr := "2023-05-10 15:30:00"
+	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}*/
+
 	fmt.Printf("%s\n", anime.Title)
-	fmt.Printf("ID: %d\n", anime.ID)
+	fmt.Printf("Score: %v\n", anime.Mean)
+	fmt.Printf("Ranking: #%d\n", anime.Rank)
+	fmt.Printf("Popularity: #%d\n", anime.Popularity)
 	fmt.Printf("Premier: %d %s\n", anime.StartSeason.Year, anime.StartSeason.Season)
+	// TO DO: Convert JST value to AEST
+	fmt.Printf("Broadcast: %v at %v JST+1\n", anime.Broadcast.DayOfTheWeek, anime.Broadcast.StartTime)
 	fmt.Printf("Studio: %v\n", anime.Studios)
 	fmt.Printf("Episodes: %d\n", anime.NumEpisodes)
 	fmt.Printf("Episode Duration: %d minutes\n", anime.AverageEpisodeDuration/60)
+
+	/*fmt.Println("JST Time:", jstTime)
+	fmt.Println("AEST Time:", aestTime)*/
 }
 
 type clientIDTransport struct {
@@ -53,3 +70,31 @@ func (c *clientIDTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	req.Header.Add("X-MAL-CLIENT-ID", c.ClientID)
 	return c.Transport.RoundTrip(req)
 }
+
+/*
+func convertJSTToAEST(jstTimeStr string) (jstTime time.Time, aestTime time.Time, err error) {
+	layout := "2006-01-02 15:04:05"
+
+	// Parse JST time
+	jstLocation, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return
+	}
+	jstTime, err = time.ParseInLocation(layout, jstTimeStr, jstLocation)
+	if err != nil {
+		return
+	}
+
+	// Convert JST to UTC
+	utcTime := jstTime.UTC()
+
+	// Convert UTC to AEST
+	aestLocation, err := time.LoadLocation("Australia/Sydney")
+	if err != nil {
+		return
+	}
+	aestTime = utcTime.In(aestLocation)
+
+	return
+}
+*/
