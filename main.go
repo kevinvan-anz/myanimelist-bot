@@ -20,9 +20,25 @@ func main() {
 
 	ctx := context.Background()
 
-	anime, response, option := c.Anime.Details(ctx, 51009)
+	anime, _, err := c.Anime.Details(ctx, 51009,
+		mal.Fields{
+			"ID",
+			"start_season",
+			"studios",
+			"num_episodes",
+			"average_episode_duration",
+		})
+	if err != nil {
+		fmt.Printf("Unable to find anime: %v", err.Error())
+		return
+	}
 
-	fmt.Println(anime, response, option)
+	fmt.Printf("%s\n", anime.Title)
+	fmt.Printf("ID: %d\n", anime.ID)
+	fmt.Printf("Premier: %d %s\n", anime.StartSeason.Year, anime.StartSeason.Season)
+	fmt.Printf("Studio: %v\n", anime.Studios)
+	fmt.Printf("Episodes: %d\n", anime.NumEpisodes)
+	fmt.Printf("Episode Duration: %d minutes\n", anime.AverageEpisodeDuration/60)
 }
 
 type clientIDTransport struct {
