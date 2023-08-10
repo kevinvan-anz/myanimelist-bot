@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/nstratos/go-myanimelist/mal"
 )
@@ -36,12 +37,12 @@ func main() {
 		return
 	}
 
-	/*jstTimeStr := "2023-05-10 15:30:00"
+	jstTimeStr := "2023-05-10 15:30:00"
 	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
-	}*/
+	}
 
 	fmt.Printf("%s\n", anime.Title)
 	fmt.Printf("Score: %v\n", anime.Mean)
@@ -54,8 +55,8 @@ func main() {
 	fmt.Printf("Episodes: %d\n", anime.NumEpisodes)
 	fmt.Printf("Episode Duration: %d minutes\n", anime.AverageEpisodeDuration/60)
 
-	/*fmt.Println("JST Time:", jstTime)
-	fmt.Println("AEST Time:", aestTime)*/
+	fmt.Println("JST Time:", jstTime)
+	fmt.Println("AEST Time:", aestTime)
 }
 
 type clientIDTransport struct {
@@ -71,30 +72,25 @@ func (c *clientIDTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	return c.Transport.RoundTrip(req)
 }
 
-/*
-func convertJSTToAEST(jstTimeStr string) (jstTime time.Time, aestTime time.Time, err error) {
+func convertJSTToAEST(jstTimeStr string) (time.Time, time.Time, error) {
 	layout := "2006-01-02 15:04:05"
 
 	// Parse JST time
 	jstLocation, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		return
+		return time.Time{}, time.Time{}, err
 	}
-	jstTime, err = time.ParseInLocation(layout, jstTimeStr, jstLocation)
+	jstTime, err := time.ParseInLocation(layout, jstTimeStr, jstLocation)
 	if err != nil {
-		return
+		return time.Time{}, time.Time{}, err
 	}
 
-	// Convert JST to UTC
-	utcTime := jstTime.UTC()
-
-	// Convert UTC to AEST
-	aestLocation, err := time.LoadLocation("Australia/Sydney")
+	// Convert JST to AEST
+	aestLocation, err := time.LoadLocation("Australia/Melbourne")
 	if err != nil {
-		return
+		return time.Time{}, time.Time{}, err
 	}
-	aestTime = utcTime.In(aestLocation)
+	aestTime := jstTime.In(aestLocation)
 
-	return
+	return jstTime, aestTime, nil
 }
-*/
