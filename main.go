@@ -51,7 +51,9 @@ func main() {
 	fmt.Printf("Premier: %d %s\n", anime.StartSeason.Year, anime.StartSeason.Season)
 	// TO DO: Convert JST value to AEST
 	fmt.Printf("Broadcast: %v at %v JST+1\n", anime.Broadcast.DayOfTheWeek, anime.Broadcast.StartTime)
-	fmt.Printf("Studio: %v\n", anime.Studios)
+	for _, s := range anime.Studios {
+		fmt.Printf("Studio: %s\n", s.Name)
+	}
 	fmt.Printf("Episodes: %d\n", anime.NumEpisodes)
 	fmt.Printf("Episode Duration: %d minutes\n", anime.AverageEpisodeDuration/60)
 
