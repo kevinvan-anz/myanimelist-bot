@@ -37,6 +37,7 @@ func main() {
 		return
 	}
 
+	// Converting JST to AEST
 	jstTimeStr := "2023-05-10 15:30:00"
 	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
 	if err != nil {
@@ -44,6 +45,7 @@ func main() {
 		return
 	}
 
+	// Sample output for anime details
 	fmt.Printf("%s\n", anime.Title)
 	fmt.Printf("Score: %v\n", anime.Mean)
 	fmt.Printf("Ranking: #%d\n", anime.Rank)
