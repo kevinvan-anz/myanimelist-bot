@@ -12,10 +12,6 @@ import (
 )
 
 func main() {
-	// Define a flag for the anime ID
-	animeIDFlag := flag.Int("animeID", 0, "Anime ID")
-	flag.Parse()
-
 	// Requesting MAL API
 	clientIDUsername := os.Getenv("MALCLIENTID")
 	publicInfoClient := &http.Client{
@@ -27,8 +23,14 @@ func main() {
 
 	ctx := context.Background()
 
+	animeID, err := readAnimeID()
+	if err != nil {
+		fmt.Errorf("invalid animeID input from MAL, error: %v", err)
+		return
+	}
+
 	// Retrieving anime data fields
-	anime, _, err := c.Anime.Details(ctx, *animeIDFlag,
+	anime, _, err := c.Anime.Details(ctx, animeID,
 		mal.Fields{
 			"mean",
 			"rank",
