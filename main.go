@@ -81,6 +81,13 @@ type AnimeData struct {
 
 // processAnimeData - Processing data from AnimeData struct
 func processAnimeData(anime mal.Anime) AnimeData {
+	jstStartTime := &anime.Broadcast.StartTime
+	_, aestTime, err := convertJSTToAEST(*jstStartTime)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return AnimeData{}
+	}
+
 	animeData := AnimeData{
 		Title:                 anime.Title,
 		Synopsis:              anime.Synopsis,
@@ -88,7 +95,7 @@ func processAnimeData(anime mal.Anime) AnimeData {
 		Rank:                  anime.Rank,
 		Popularity:            anime.Popularity,
 		StartSeason:           fmt.Sprintf("%d %s", anime.StartSeason.Year, anime.StartSeason.Season),
-		Broadcast:             fmt.Sprintf("%v at %v JST+1", anime.Broadcast.DayOfTheWeek, anime.Broadcast.StartTime),
+		Broadcast:             fmt.Sprintf("%v at %v JST+1", anime.Broadcast.DayOfTheWeek, aestTime),
 		Studios:               make([]string, len(anime.Studios)),
 		NumEpisodes:           anime.NumEpisodes,
 		AverageEpisodeMinutes: anime.AverageEpisodeDuration / 60,
@@ -102,14 +109,6 @@ func processAnimeData(anime mal.Anime) AnimeData {
 }
 
 func printAnimeData(animeData AnimeData) {
-	// Converting JST to AEST
-	jstTimeStr := "2023-05-10 15:30:00"
-	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
 	// Sample output for anime details
 	fmt.Printf("%s\n", animeData.Title)
 	fmt.Printf("Score: %v\n", animeData.Mean)
@@ -122,10 +121,7 @@ func printAnimeData(animeData AnimeData) {
 		fmt.Printf("Studio: %s\n", studio)
 	}
 	fmt.Printf("Episodes: %d\n", animeData.NumEpisodes)
-	fmt.Printf("Episode Duration: %d minutes\n", animeData.AverageEpisodeMinutes)
-
-	fmt.Println("JST Time:", jstTime)
-	fmt.Println("AEST Time:", aestTime)
+	fmt.Printf("Episode Duration: %d minutes\n\n", animeData.AverageEpisodeMinutes)
 
 	fmt.Printf("OBJECT PRINT: %+v\n", animeData)
 }
@@ -153,7 +149,7 @@ func readAnimeID() (int, error) {
 }
 
 func convertJSTToAEST(jstTimeStr string) (time.Time, time.Time, error) {
-	layout := "2006-01-02 15:04:05"
+	layout := "15:04"
 
 	// Parse JST time
 	jstLocation, err := time.LoadLocation("Asia/Tokyo")
