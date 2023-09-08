@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,6 +12,10 @@ import (
 )
 
 func main() {
+	// Define a flag for the anime ID
+	animeIDFlag := flag.Int("animeID", 0, "Anime ID")
+	flag.Parse()
+
 	// Requesting MAL API
 	clientIDUsername := os.Getenv("MALCLIENTID")
 	publicInfoClient := &http.Client{
@@ -23,7 +28,7 @@ func main() {
 	ctx := context.Background()
 
 	// Retrieving anime data fields
-	anime, _, err := c.Anime.Details(ctx, 51179,
+	anime, _, err := c.Anime.Details(ctx, *animeIDFlag,
 		mal.Fields{
 			"mean",
 			"rank",
@@ -39,32 +44,9 @@ func main() {
 		return
 	}
 
-	// Converting JST to AEST
-	jstTimeStr := "2023-05-10 15:30:00"
-	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
 	animeData := processAnimeData(*anime)
+	printAnimeData(animeData)
 
-	// Sample output for anime details
-	fmt.Printf("%s\n", animeData.Title)
-	fmt.Printf("Score: %v\n", animeData.Mean)
-	fmt.Printf("Ranking: #%d\n", animeData.Rank)
-	fmt.Printf("Popularity: #%d\n", animeData.Popularity)
-	fmt.Printf("Premier: %s\n", animeData.StartSeason)
-	// TO DO: Convert JST value to AEST
-	fmt.Printf("Broadcast: %s\n", animeData.Broadcast)
-	for _, studio := range animeData.Studios {
-		fmt.Printf("Studio: %s\n", studio)
-	}
-	fmt.Printf("Episodes: %d\n", anime.NumEpisodes)
-	fmt.Printf("Episode Duration: %d minutes\n", animeData.AverageEpisodeMinutes)
-
-	fmt.Println("JST Time:", jstTime)
-	fmt.Println("AEST Time:", aestTime)
 }
 
 type clientIDTransport struct {
@@ -98,14 +80,13 @@ type AnimeData struct {
 // processAnimeData - Processing data from AnimeData struct
 func processAnimeData(anime mal.Anime) AnimeData {
 	animeData := AnimeData{
-		Title:       anime.Title,
-		Synopsis:    anime.Synopsis,
-		Mean:        anime.Mean,
-		Rank:        anime.Rank,
-		Popularity:  anime.Popularity,
-		StartSeason: fmt.Sprintf("Premier: %d %s", anime.StartSeason.Year, anime.StartSeason.Season),
-		Broadcast:   fmt.Sprintf("Broadcast: %v at %v JST+1", anime.Broadcast.DayOfTheWeek, anime.Broadcast.StartTime),
-		// Need explanation
+		Title:                 anime.Title,
+		Synopsis:              anime.Synopsis,
+		Mean:                  anime.Mean,
+		Rank:                  anime.Rank,
+		Popularity:            anime.Popularity,
+		StartSeason:           fmt.Sprintf("%d %s", anime.StartSeason.Year, anime.StartSeason.Season),
+		Broadcast:             fmt.Sprintf("%v at %v JST+1", anime.Broadcast.DayOfTheWeek, anime.Broadcast.StartTime),
 		Studios:               make([]string, len(anime.Studios)),
 		NumEpisodes:           anime.NumEpisodes,
 		AverageEpisodeMinutes: anime.AverageEpisodeDuration / 60,
@@ -116,6 +97,57 @@ func processAnimeData(anime mal.Anime) AnimeData {
 	}
 
 	return animeData
+}
+
+func printAnimeData(animeData AnimeData) {
+	// Converting JST to AEST
+	jstTimeStr := "2023-05-10 15:30:00"
+	jstTime, aestTime, err := convertJSTToAEST(jstTimeStr)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// Sample output for anime details
+	fmt.Printf("%s\n", animeData.Title)
+	fmt.Printf("Score: %v\n", animeData.Mean)
+	fmt.Printf("Ranking: #%d\n", animeData.Rank)
+	fmt.Printf("Popularity: #%d\n", animeData.Popularity)
+	fmt.Printf("Premier: %s\n", animeData.StartSeason)
+	// TO DO: Convert JST value to AEST
+	fmt.Printf("Broadcast: %s\n", animeData.Broadcast)
+	for _, studio := range animeData.Studios {
+		fmt.Printf("Studio: %s\n", studio)
+	}
+	fmt.Printf("Episodes: %d\n", animeData.NumEpisodes)
+	fmt.Printf("Episode Duration: %d minutes\n", animeData.AverageEpisodeMinutes)
+
+	fmt.Println("JST Time:", jstTime)
+	fmt.Println("AEST Time:", aestTime)
+
+	fmt.Printf("OBJECT PRINT: %+v\n", animeData)
+}
+
+func readAnimeID() (int, error) {
+	// Define flag for Anime selection
+	var animeIDFlag = flag.Int("animeID", 0, "Anime ID")
+
+	// Parse the flag to the command line into the defined flags
+	flag.Parse()
+
+	// CHeck if the "animeID" flag was provided
+	if *animeIDFlag == 0 {
+		fmt.Println("Usage: your-program -animeID <animeID>")
+		os.Exit(1)
+	}
+
+	// Validate the anime ID
+	animeID := *animeIDFlag
+	if animeID <= 0 {
+		return 0, fmt.Errorf("invalid anime ID: %d", animeID)
+	}
+
+	return animeID, nil
 }
 
 func convertJSTToAEST(jstTimeStr string) (time.Time, time.Time, error) {
