@@ -139,7 +139,7 @@ func readAnimeID() (int, error) {
 
 	// Check if the "animeID" flag was provided
 	if *animeIDFlag == 0 {
-		fmt.Println("Usage: your-program -animeID <animeID>")
+		fmt.Println("Usage: program --animeID <animeID>")
 		os.Exit(1)
 	}
 
