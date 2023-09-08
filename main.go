@@ -40,7 +40,7 @@ func main() {
 			"average_episode_duration",
 		})
 	if err != nil {
-		fmt.Printf("Unable to find anime: %v", err.Error())
+		fmt.Printf("Unable to find anime using input, error: %v", err.Error())
 		return
 	}
 
@@ -135,7 +135,7 @@ func readAnimeID() (int, error) {
 	// Parse the flag to the command line into the defined flags
 	flag.Parse()
 
-	// CHeck if the "animeID" flag was provided
+	// Check if the "animeID" flag was provided
 	if *animeIDFlag == 0 {
 		fmt.Println("Usage: your-program -animeID <animeID>")
 		os.Exit(1)
