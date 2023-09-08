@@ -95,7 +95,7 @@ func processAnimeData(anime mal.Anime) AnimeData {
 		Rank:                  anime.Rank,
 		Popularity:            anime.Popularity,
 		StartSeason:           fmt.Sprintf("%d %s", anime.StartSeason.Year, anime.StartSeason.Season),
-		Broadcast:             fmt.Sprintf("%v at %v JST+1", anime.Broadcast.DayOfTheWeek, aestTime),
+		Broadcast:             fmt.Sprintf("%v at %v AEST", anime.Broadcast.DayOfTheWeek, aestTime),
 		Studios:               make([]string, len(anime.Studios)),
 		NumEpisodes:           anime.NumEpisodes,
 		AverageEpisodeMinutes: anime.AverageEpisodeDuration / 60,
