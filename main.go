@@ -149,7 +149,8 @@ func readAnimeID() (int, error) {
 }
 
 func convertJSTToAEST(jstTimeStr string) (time.Time, time.Time, error) {
-	layout := "15:04"
+	layout := "2006-01-02 15:04"
+	jstTimeStr := "2023-01-01 " + jstTimeStr
 
 	// Parse JST time
 	jstLocation, err := time.LoadLocation("Asia/Tokyo")
