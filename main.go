@@ -115,7 +115,6 @@ func printAnimeData(animeData AnimeData) {
 	fmt.Printf("Ranking: #%d\n", animeData.Rank)
 	fmt.Printf("Popularity: #%d\n", animeData.Popularity)
 	fmt.Printf("Premier: %s\n", animeData.StartSeason)
-	// TO DO: Convert JST value to AEST
 	fmt.Printf("Broadcast: %s\n", animeData.Broadcast)
 	for _, studio := range animeData.Studios {
 		fmt.Printf("Studio: %s\n", studio)
