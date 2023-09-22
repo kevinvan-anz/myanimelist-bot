@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/nstratos/go-myanimelist/mal"
 )
 
@@ -50,6 +51,15 @@ func main() {
 	animeData := processAnimeData(*anime)
 	printAnimeData(animeData)
 
+}
+
+// AnimeHandler - Handle request with the URL parameter 'animeID'
+func AnimeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	animeID := vars["animeID"]
+	// Convert animeID to an integer if needed
+	// To Perform any actions or processing based on the animeID or other URL parameters
+	fmt.Fprintf(w, "Anime ID: %s", animeID)
 }
 
 type clientIDTransport struct {
