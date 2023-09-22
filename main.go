@@ -13,6 +13,15 @@ import (
 )
 
 func main() {
+	// Gorilla Mux router
+	r := mux.NewRouter()
+
+	// Define the route for the AnimeHandler with a URL parameter animeID
+	r.HandleFunc("/anime/{animeID:[0-9]+}", AnimeHandler).Methods("GET")
+
+	// Start the HTTP server
+	http.Handle("/", r)
+	http.ListenAndServe(":8080", nil)
 
 	// Requesting MAL API
 	clientIDUsername := os.Getenv("MALCLIENTID")
