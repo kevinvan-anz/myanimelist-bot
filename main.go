@@ -8,10 +8,21 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/nstratos/go-myanimelist/mal"
 )
 
 func main() {
+	// Gorilla Mux router
+	r := mux.NewRouter()
+
+	// Define the route for the AnimeHandler with a URL parameter animeID
+	r.HandleFunc("/anime/{animeID:[0-9]+}", AnimeHandler).Methods("GET")
+
+	// Start the HTTP server
+	http.Handle("/", r)
+	http.ListenAndServe(":8080", nil)
+
 	// Requesting MAL API
 	clientIDUsername := os.Getenv("MALCLIENTID")
 	publicInfoClient := &http.Client{
@@ -49,6 +60,15 @@ func main() {
 	animeData := processAnimeData(*anime)
 	printAnimeData(animeData)
 
+}
+
+// AnimeHandler - Handle request with the URL parameter 'animeID'
+func AnimeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	animeID := vars["animeID"]
+	// Convert animeID to an integer if needed
+	// To Perform any actions or processing based on the animeID or other URL parameters
+	fmt.Fprintf(w, "Anime ID: %s", animeID)
 }
 
 type clientIDTransport struct {
